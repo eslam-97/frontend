@@ -18,7 +18,7 @@
         @change="sortProducts($event)"
         dense
         solo
-        :value="$t('name')"
+        :value="sortBy"
       >
       </v-select>
 
@@ -63,7 +63,7 @@
         flat
         :items="cardNmb"
         dense
-        value="12"
+        :value="paginationValue"
         solo
         @change="numFilter($event)"
       >
@@ -84,7 +84,7 @@ export default {
         this.$i18n.t("Price"),
         this.$i18n.t("popular")
       ],
-      cardNmb: ["12", "24", "36"],
+      cardNmb: [12, 24, 36],
       sortBy: "name",
       paginationValue: 12,
       orderDir: "asc"
@@ -95,11 +95,8 @@ export default {
   methods: {
     sortProducts(filter) {
       this.sortBy = filter;
-      this.$store.dispatch("filters/filterProducts", [
+      this.$store.dispatch("filters/sortProducts", [
         this.type,
-        this.selectedFilters[0],
-        this.selectedFilters[1],
-        this.selectedFilters[2],
         this.sortBy,
         this.orderDir
       ]);
@@ -113,11 +110,8 @@ export default {
     filterDesc() {
       this.filterIcon = false;
       this.orderDir = "desc";
-      this.$store.dispatch("filters/filterProducts", [
+      this.$store.dispatch("filters/sortProducts", [
         this.type,
-        this.selectedFilters[0],
-        this.selectedFilters[1],
-        this.selectedFilters[2],
         this.sortBy,
         this.orderDir
       ]);
@@ -126,11 +120,8 @@ export default {
     filterAsc() {
       this.filterIcon = true;
       this.orderDir = "asc";
-      this.$store.dispatch("filters/filterProducts", [
+      this.$store.dispatch("filters/sortProducts", [
         this.type,
-        this.selectedFilters[0],
-        this.selectedFilters[1],
-        this.selectedFilters[2],
         this.sortBy,
         this.orderDir
       ]);

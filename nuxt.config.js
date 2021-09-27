@@ -66,7 +66,7 @@ export default {
     defaultLocale:'en',
     langDir:'~/lang/',
     lazy:true,
-    baseUrl:'https://www.shopiland.com',
+    baseUrl:'https://www.tech-shop.com',
     vuex:{
         synceLocale:true
       },

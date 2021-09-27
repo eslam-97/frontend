@@ -17,6 +17,17 @@ export default {
       }
     };
   },
+  head: {
+    title: "acccessories page",
+    meta: [
+      {
+        hid: "acccessories page",
+        name: "acccessories page",
+        content:
+          "acccessories page for tech shop contains categories all electronic acccessories for our products"
+      }
+    ]
+  },
   components: {
     productPage
   }

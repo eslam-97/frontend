@@ -17,6 +17,16 @@ export default {
       }
     };
   },
+  head: {
+    title: "tablet page",
+    meta: [
+      {
+        hid: "tablet page",
+        name: "tablet page",
+        content: "tablet page for tech shop contains all tablet of our products"
+      }
+    ]
+  },
   components: {
     productPage
   }

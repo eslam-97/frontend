@@ -101,9 +101,6 @@ export default {
   data() {
     return {
       drawer: false,
-      filteredProducts: [],
-      maxPrice: "",
-      minPrice: "",
       pageSize: 12,
       totalPages: 0,
       currentPage: 1,
@@ -115,13 +112,12 @@ export default {
       alertType: "success"
     };
   },
-
+  created() {
+    this.$store.dispatch("home/ProductsPriceRange", [this.type]);
+  },
   async fetch() {
     await this.$store.dispatch("filters/filterProducts", [this.type]);
   },
-  // mounted() {
-  //   this.$store.dispatch("filters/filterProducts", [this.type]);
-  // },
 
   components: {
     breadCrumb,
@@ -165,45 +161,13 @@ export default {
 
   computed: {
     ...mapGetters({
+      firstLoadproducts: "home/getAllProduct",
       products: "filters/getFilterdProduct",
-      priceFiltered: "filters/getPriceFiltered",
       paginationNum: "filters/getPaginationNum"
     }),
 
-    priceRange() {
-      const prices = [];
-      if (this.products.length !== 0) {
-        this.products.forEach(element => {
-          prices.push(element.totalprice);
-        });
-        this.maxPrice = Math.max(...prices);
-        this.minPrice = Math.min(...prices);
-        this.$store.commit("filters/setPriceRange", [
-          this.minPrice,
-          this.maxPrice
-        ]);
-      }
-    },
-
-    filterProductByPrice() {
-      if (this.priceFiltered.length > 0) {
-        this.filteredProducts = this.products.filter(
-          element =>
-            element.totalprice >= this.priceFiltered[0] &&
-            element.totalprice <= this.priceFiltered[1]
-        );
-      }
-      if (this.priceFiltered.length == 0) {
-        this.filteredProducts = this.products.filter(
-          element =>
-            element.totalprice >= this.minPrice &&
-            element.totalprice <= this.maxPrice
-        );
-      }
-    },
-
     paginate() {
-      this.totalPages = Math.ceil(this.filteredProducts.length / this.pageSize);
+      this.totalPages = Math.ceil(this.products.length / this.pageSize);
       if (this.currentPage < 1) {
         this.currentPage = 1;
       } else if (this.currentPage > this.totalPages) {
@@ -211,26 +175,15 @@ export default {
       }
       let startIndex = (this.currentPage - 1) * this.pageSize;
       let endIndex = Math.min(startIndex + this.pageSize, this.products.length);
-      this.paginatedProducts = this.filteredProducts.slice(
-        startIndex,
-        endIndex
-      );
+      this.paginatedProducts = this.products.slice(startIndex, endIndex);
     }
   },
   watch: {
     products() {
-      this.priceRange;
-      this.filterProductByPrice;
       this.paginate;
-    },
-    priceFiltered() {
-      this.filterProductByPrice;
     },
     paginationNum() {
       this.pageSize = this.paginationNum;
-      this.paginate;
-    },
-    filteredProducts() {
       this.paginate;
     },
     paginatedProducts() {

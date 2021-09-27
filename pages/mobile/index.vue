@@ -17,6 +17,17 @@ export default {
       }
     };
   },
+  head: {
+    title: "mobile page",
+    meta: [
+      {
+        hid: "mobile page",
+        name: "mobile page",
+        content:
+          "mobile page for tech shop contains all mobiles of our products"
+      }
+    ]
+  },
   components: {
     productPage
   }

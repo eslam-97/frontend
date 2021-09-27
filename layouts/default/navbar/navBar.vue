@@ -225,7 +225,7 @@ export default {
     }
   }
   .search-input {
-    width: 30rem;
+    width: 35rem;
   }
   .nav-tabs {
     z-index: 9999;
@@ -239,6 +239,11 @@ export default {
         width: 500px;
       }
     }
+  }
+}
+@media (max-width: 1200px) {
+  .search-input {
+    width: 25rem !important;
   }
 }
 @media (max-width: 1100px) {

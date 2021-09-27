@@ -34,7 +34,7 @@
               :key="brand.en_brand"
             >
               <v-checkbox
-                v-if="$i18n.locale == 'en'"
+                v-if="$i18n.locale == 'en' && brand.product_count > 0"
                 @click="filterByBrand()"
                 v-model="brandFilters"
                 :value="brand.en_brand"
@@ -47,7 +47,7 @@
               </v-checkbox>
 
               <v-checkbox
-                v-if="$i18n.locale == 'ar'"
+                v-if="$i18n.locale == 'ar' && brand.product_count > 0"
                 @click="filterByBrand()"
                 v-model="brandFilters"
                 :value="brand.en_brand"
@@ -77,7 +77,7 @@
           <v-expansion-panel-content dir="auto">
             <div class="mt-16">
               <v-range-slider
-                v-model="range"
+                v-model="priceRange"
                 hide-details
                 color="teal lighten-2"
                 thumb-label="always"
@@ -89,7 +89,7 @@
               >
               </v-range-slider>
               <p class="text-center mt-n2 grey--text">
-                {{ price[1] }} EGP - {{ price[0] }} EGP
+                {{ price[0] }} EGP - {{ price[1] }} EGP
               </p>
             </div>
           </v-expansion-panel-content>
@@ -198,26 +198,28 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters } from "vuex";
 export default {
   name: "sidebar",
   data() {
     return {
-      radioGroup: "",
       panel: [0, 1, 2, 3],
-      range: this.$store.state.filters.productPrice,
+      priceRange: this.$store.state.home.productPrice,
       brandFilters: null,
       colorFilters: null,
-      OSFilters: null
+      OSFilters: null,
+      pricesSelected: [],
+      filtersParams1: [],
+      filtersParams2: [],
+      filtersParams3: [],
+      filtersParams4: []
     };
   },
 
   props: ["type"],
 
-  mounted() {},
-
   fetch() {
-    if (this.selectedBrand.length > 0) {
+    if (this.selectedBrand && this.selectedBrand.length > 0) {
       this.brandFilters = this.selectedBrand;
       this.filterByBrand();
       this.$store.dispatch("filters/productBrand", [this.type]);
@@ -227,90 +229,45 @@ export default {
     } else {
       this.$store.dispatch("filters/productBrand", [this.type]),
         this.$store.dispatch("filters/productColor", [this.type]),
-        this.$store.dispatch("filters/productOperatingSystem", [this.type]);
+        this.$store.dispatch("filters/productOS", [this.type]);
     }
   },
 
   methods: {
     priceSlider(priceSelected) {
-      this.$store.commit("filters/setProductPriceFiltered", [
-        priceSelected[0],
-        priceSelected[1]
-      ]);
+      this.pricesSelected = priceSelected.slice(0);
+      this.filtersParams;
+      this.$store.dispatch("filters/filterProducts", this.filtersParams1);
+      this.$store.dispatch("filters/productBrand", this.filtersParams2),
+        this.$store.dispatch("filters/productColor", this.filtersParams3),
+        this.$store.dispatch("filters/productOS", this.filtersParams4);
+      this.$store.commit("filters/setSelectedFilters", this.filtersParams1);
     },
 
     filterByBrand() {
-      this.$store.dispatch("filters/filterProducts", [
-        this.type,
-        this.brandFilters,
-        this.colorFilters,
-        this.OSFilters
-      ]);
-      this.$store.dispatch("filters/productColor", [
-        this.type,
-        this.brandFilters,
-        this.OSFilters
-      ]),
-        this.$store.dispatch("filters/productOperatingSystem", [
-          this.type,
-          this.brandFilters,
-          this.colorFilters
-        ]);
-      this.$store.commit("filters/setSelectedFilters", [
-        this.brandFilters,
-        this.colorFilters,
-        this.OSFilters
-      ]);
+      this.filtersParams;
+      this.$store.dispatch("filters/filterProducts", this.filtersParams1);
+      this.$store.dispatch("filters/productColor", this.filtersParams3),
+        this.$store.dispatch("filters/productOS", this.filtersParams4);
+      this.$store.commit("filters/setSelectedFilters", this.filtersParams1);
       this.$store.commit("filters/setProductPriceFiltered", []);
     },
 
     filterByColor() {
-      this.$store.dispatch("filters/filterProducts", [
-        this.type,
-        this.brandFilters,
-        this.colorFilters,
-        this.OSFilters
-      ]);
-      this.$store.dispatch("filters/productBrand", [
-        this.type,
-        this.colorFilters,
-        this.OSFilters
-      ]),
-        this.$store.dispatch("filters/productOperatingSystem", [
-          this.type,
-          this.brandFilters,
-          this.colorFilters
-        ]);
-      this.$store.commit("filters/setSelectedFilters", [
-        this.brandFilters,
-        this.colorFilters,
-        this.OSFilters
-      ]);
+      this.filtersParams;
+      this.$store.dispatch("filters/filterProducts", this.filtersParams1);
+      this.$store.dispatch("filters/productBrand", this.filtersParams2),
+        this.$store.dispatch("filters/productOS", this.filtersParams4);
+      this.$store.commit("filters/setSelectedFilters", this.filtersParams1);
       this.$store.commit("filters/setProductPriceFiltered", []);
     },
 
     filterByOS() {
-      this.$store.dispatch("filters/filterProducts", [
-        this.type,
-        this.brandFilters,
-        this.colorFilters,
-        this.OSFilters
-      ]);
-      this.$store.dispatch("filters/productBrand", [
-        this.type,
-        this.colorFilters,
-        this.OSFilters
-      ]),
-        this.$store.dispatch("filters/productColor", [
-          this.type,
-          this.brandFilters,
-          this.OSFilters
-        ]),
-        this.$store.commit("filters/setSelectedFilters", [
-          this.brandFilters,
-          this.colorFilters,
-          this.OSFilters
-        ]);
+      this.filtersParams;
+      this.$store.dispatch("filters/filterProducts", this.filtersParams1);
+      this.$store.dispatch("filters/productBrand", this.filtersParams2),
+        this.$store.dispatch("filters/productColor", this.filtersParams3),
+        this.$store.commit("filters/setSelectedFilters", this.filtersParams1);
       this.$store.commit("filters/setProductPriceFiltered", []);
     }
   },
@@ -318,17 +275,45 @@ export default {
   computed: {
     ...mapGetters({
       brands: "filters/getProductBrand",
-      price: "filters/getProductPrice",
+      price: "home/getProductPrice",
       colors: "filters/getProductColor",
       operatingSystem: "filters/getProductOperatingSystem",
       selectedBrand: "filters/getSelectedBrand"
-    })
+    }),
+    filtersParams() {
+      this.filtersParams1 = [
+        this.type,
+        this.brandFilters,
+        this.colorFilters,
+        this.OSFilters,
+        this.pricesSelected[0],
+        this.pricesSelected[1]
+      ];
+
+      this.filtersParams2 = [
+        this.type,
+        this.colorFilters,
+        this.OSFilters,
+        this.pricesSelected[0],
+        this.pricesSelected[1]
+      ];
+      this.filtersParams3 = [
+        this.type,
+        this.brandFilters,
+        this.OSFilters,
+        this.pricesSelected[0],
+        this.pricesSelected[1]
+      ];
+      this.filtersParams4 = [
+        this.type,
+        this.brandFilters,
+        this.colorFilters,
+        this.pricesSelected[0],
+        this.pricesSelected[1]
+      ];
+    }
   },
   watch: {
-    price() {
-      this.range = this.$store.state.filters.productPrice;
-    },
-
     selectedBrand() {
       if (this.selectedBrand.length > 0) {
         this.brandFilters = this.selectedBrand;

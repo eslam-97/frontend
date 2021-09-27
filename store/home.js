@@ -6,35 +6,37 @@ axios.defaults.withCredentials = true;
 Vue.use(Vuex);
 
 export const state = () => ({
-  products: "",
   similarProducts: "",
   singleProduct: "",
   hotOffers: "",
   newArrival: "",
   bestSeller: "",
   filteredProducts: [],
-  productCategories: ""
+  productCategories: "",
+  productPrice: [0,0],
+
 });
 export const getters = {
-  getAllProduct: state => state.products,
   getSimilarProducts: state => state.similarProducts,
   getSingleProduct: state => state.singleProduct,
   getHotOffers: state => state.hotOffers,
   getNewArrival: state => state.newArrival,
   getBestSeller: state => state.bestSeller,
   getFilteredProducts: state => state.filteredProducts,
-  getProductCategories: state => state.productCategories
+  getProductCategories: state => state.productCategories,
+  getProductPrice: state => state.productPrice,
+
 };
 export const actions = {
 
-  async allProducts({ commit }, [type]) {
+  async ProductsPriceRange({ commit }, [type]) {
     try {
-      const res = await axios.get("http://localhost:8000/api/products", {
+      const res = await axios.get("http://localhost:8000/api/products/prices", {
         params: {
           type: type
         }
       });
-      commit("setProducts", res.data);
+      commit('setPriceRange', res.data)
     } catch (Error) {
       console.log(Error);
     }
@@ -134,12 +136,13 @@ export const actions = {
 };
 
 export const mutations = {
-  setProducts: (state, data) => (state.products = data),
   setSingleProduct: (state, data) => (state.singleProduct = data),
   setSimilarProducts: (state, data) => (state.similarProducts = data),
   setHotOffers: (state, data) => (state.hotOffers = data),
   setNewArrival: (state, data) => (state.newArrival = data),
   setBestSeller: (state, data) => (state.bestSeller = data),
   setFilteredProducts: (state, data) => (state.filteredProducts = data),
-  setProductCategories: (state, data) => (state.productCategories = data)
+  setProductCategories: (state, data) => (state.productCategories = data),
+  setPriceRange: (state, data) => (state.productPrice = data),
+
 };

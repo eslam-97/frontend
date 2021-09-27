@@ -8,11 +8,11 @@ export const state = () => ({
   productType: "",
   filterdProduct: "",
   productBrand: "",
-  productPrice: [0, 0],
   productPriceFiltered: "",
   productColor: "",
   productOperatingSystem: "",
   selectedFilters: [],
+  sortingFilters:[],
   selectedBrand: null,
   paginationNum: 0
 });
@@ -20,7 +20,6 @@ export const getters = {
   getProductType: state => state.productType,
   getFilterdProduct: state => state.filterdProduct,
   getProductBrand: state => state.productBrand,
-  getProductPrice: state => state.productPrice,
   getPriceFiltered: state => state.productPriceFiltered,
   getProductColor: state => state.productColor,
   getProductOperatingSystem: state => state.productOperatingSystem,
@@ -30,13 +29,15 @@ export const getters = {
 };
 export const actions = {
 
-  async productBrand({ commit }, [type, color, OperatingSystem]) {
+  async productBrand({ commit }, [type, color, OperatingSystem, min_price, max_price]) {
     try {
       const res = await axios.get("http://localhost:8000/api/products/brands", {
         params: {
           type: type,
           color: color,
           OperatingSystem: OperatingSystem,
+          min_price: min_price,
+          max_price: max_price
         }
       });
       commit("setProductBrand", res.data);
@@ -46,13 +47,15 @@ export const actions = {
   },
 
 
-  async productColor({ commit }, [type, brand, OperatingSystem ]) {
+  async productColor({ commit }, [type, brand, OperatingSystem, min_price, max_price ]) {
     try {
       const res = await axios.get("http://localhost:8000/api/products/colors", {
         params: {
           type: type,
           brand: brand,
           OperatingSystem: OperatingSystem,
+          min_price: min_price,
+          max_price: max_price
         }
       });
       commit("setProductColor", res.data);
@@ -61,7 +64,7 @@ export const actions = {
     }
   },
 
-  async productOperatingSystem({ commit }, [type, brand, color]) {
+  async productOS({ commit }, [type, brand, color, min_price, max_price]) {
     try {
       const res = await axios.get(
         "http://localhost:8000/api/products/operating-systems",
@@ -70,6 +73,8 @@ export const actions = {
             type: type,
             brand: brand,
             color: color,
+            min_price: min_price,
+            max_price: max_price
           }
         }
       );
@@ -83,7 +88,7 @@ export const actions = {
   //###############################################################################################
 
 
-  async filterProducts({ commit }, [type, brand, color, operatingSystem, order_by, order_dir]) {
+  async filterProducts({ commit,state }, [type, brand, color, operatingSystem, min_price, max_price]) {
     try {
       const res = await axios.get(`http://localhost:8000/api/products`, {
         params: {
@@ -91,8 +96,10 @@ export const actions = {
           brand: brand,
           color: color,
           operatingSystem: operatingSystem,
-          order_by: order_by,
-          order_dir: order_dir,
+          min_price: min_price,
+          max_price: max_price,
+          order_by: state.sortingFilters[0],
+          order_dir: state.sortingFilters[1],
         }
       });
 
@@ -102,17 +109,23 @@ export const actions = {
     } 
   },
 
-  async sortProducts({ commit }, [type, order_by, order_dir]) {
+  async sortProducts({ commit, state }, [type, order_by, order_dir]) {
     try {
       const res = await axios.get(`http://localhost:8000/api/products`, {
         params: {
-          type: type,
+         type: type,
+         brand: state.selectedFilters[1],
+         color: state.selectedFilters[2],
+         operatingSystem: state.selectedFilters[3],
+         min_price: state.selectedFilters[4],
+         max_price: state.selectedFilters[5],
           order_by: order_by,
           order_dir: order_dir,
         }
       });
 
       commit("setFilterdProduct", res.data);
+      commit('setSortingFilters', [order_by, order_dir])
     } catch (Error) {
       console.log(Error);
     } 
@@ -127,7 +140,7 @@ export const mutations = {
   setSelectedFilters: (state, data) => (state.selectedFilters = data),
   setFilterdProduct: (state, payload) => (state.filterdProduct = payload),
   setPaginationValue: (state, data) => (state.paginationNum = data),
-  setPriceRange: (state, data) => (state.productPrice = data),
   setProductPriceFiltered: (state, data) => (state.productPriceFiltered = data),
+  setSortingFilters: (state, data) => (state.sortingFilters = data),
   // setProductType: (state, data) => (state.productType = data),
 };

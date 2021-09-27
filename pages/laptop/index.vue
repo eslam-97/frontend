@@ -17,6 +17,17 @@ export default {
       }
     };
   },
+  head: {
+    title: "LAPTOP page",
+    meta: [
+      {
+        hid: "LAPTOP page",
+        name: "LAPTOP page",
+        content:
+          "LAPTOP page for tech shop contains all LAPTOPs of our products"
+      }
+    ]
+  },
   components: {
     productPage
   }
