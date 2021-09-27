@@ -101,7 +101,6 @@ export default {
   data() {
     return {
       drawer: false,
-      products: [],
       filteredProducts: [],
       maxPrice: "",
       minPrice: "",
@@ -118,9 +117,11 @@ export default {
   },
 
   async fetch() {
-    await this.$store.dispatch("home/allProducts", [this.type]);
-    this.switchProduct;
+    await this.$store.dispatch("filters/filterProducts", [this.type]);
   },
+  // mounted() {
+  //   this.$store.dispatch("filters/filterProducts", [this.type]);
+  // },
 
   components: {
     breadCrumb,
@@ -164,25 +165,10 @@ export default {
 
   computed: {
     ...mapGetters({
-      checkboxvalue: "filters/getCheckboxValue",
-      productUnfiltered: "home/getAllProduct",
-      productFiltered: "filters/getFilterdProduct",
+      products: "filters/getFilterdProduct",
       priceFiltered: "filters/getPriceFiltered",
-      filterName: "filters/getOrderedByFilter",
-      filterOption: "filters/getOrderedByOption",
       paginationNum: "filters/getPaginationNum"
     }),
-
-    switchProduct() {
-      if (
-        this.checkboxvalue == true &&
-        this.$store.getters["filters/getFilterdProduct"].length !== 0
-      ) {
-        this.products = this.$store.getters["filters/getFilterdProduct"];
-      } else {
-        this.products = this.$store.getters["home/getAllProduct"];
-      }
-    },
 
     priceRange() {
       const prices = [];
@@ -216,87 +202,6 @@ export default {
       }
     },
 
-    ProductByOrderFilter() {
-      if (this.filterName == "Name") {
-        if (this.filterOption == "asc") {
-          this.filteredProducts.sort(function(a, b) {
-            return b.name < a.name ? 1 : b.name > a.name ? -1 : 0;
-          });
-        }
-        if (this.filterOption == "desc") {
-          this.filteredProducts.sort(function(a, b) {
-            return b.name < a.name ? -1 : b.name > a.name ? 1 : 0;
-          });
-        }
-      } else if (this.filterName == "price") {
-        if (this.filterOption == "asc") {
-          this.filteredProducts = this.filteredProducts.sort(function(a, b) {
-            return b.totalprice < a.totalprice
-              ? 1
-              : b.totalprice > a.totalprice
-              ? -1
-              : 0;
-          });
-        } else if (this.filterOption == "desc") {
-          this.filteredProducts = this.filteredProducts.sort(function(a, b) {
-            return b.totalprice < a.totalprice
-              ? -1
-              : b.totalprice > a.totalprice
-              ? 1
-              : 0;
-          });
-        }
-      } else if (this.filterName == "Rating") {
-        let rateTotalForA = 0;
-        let rateForA = 0;
-        let rateTotalForB = 0;
-        let rateForB = 0;
-        if (this.filterOption == "asc") {
-          this.filteredProducts = this.filteredProducts.sort(function(a, b) {
-            for (let i = 0; i < a.rating.length; i++) {
-              rateForA = a.rating[i].rate;
-              rateTotalForA = rateTotalForA + rateForA / a.rating.length;
-            }
-            let roundRateTotalForA = Math.round(rateTotalForA);
-            rateTotalForA = 0;
-            for (let i = 0; i < b.rating.length; i++) {
-              rateForB = b.rating[i].rate;
-              rateTotalForB = rateTotalForB + rateForB / b.rating.length;
-            }
-            let roundRateTotalForB = Math.round(rateTotalForB);
-            rateTotalForB = 0;
-
-            return roundRateTotalForA < roundRateTotalForB
-              ? -1
-              : roundRateTotalForA > roundRateTotalForB
-              ? 1
-              : 0;
-          });
-        } else if (this.filterOption == "desc") {
-          this.filteredProducts = this.filteredProducts.sort(function(a, b) {
-            for (let i = 0; i < a.rating.length; i++) {
-              rateForA = a.rating[i].rate;
-              rateTotalForA = rateTotalForA + rateForA / a.rating.length;
-            }
-            let roundRateTotalForA = Math.round(rateTotalForA);
-            rateTotalForA = 0;
-            for (let i = 0; i < b.rating.length; i++) {
-              rateForB = b.rating[i].rate;
-              rateTotalForB = rateTotalForB + rateForB / b.rating.length;
-            }
-            let roundRateTotalForB = Math.round(rateTotalForB);
-            rateTotalForB = 0;
-
-            return roundRateTotalForA < roundRateTotalForB
-              ? 1
-              : roundRateTotalForA > roundRateTotalForB
-              ? -1
-              : 0;
-          });
-        }
-      }
-    },
-
     paginate() {
       this.totalPages = Math.ceil(this.filteredProducts.length / this.pageSize);
       if (this.currentPage < 1) {
@@ -318,17 +223,8 @@ export default {
       this.filterProductByPrice;
       this.paginate;
     },
-    productFiltered() {
-      this.switchProduct;
-    },
     priceFiltered() {
       this.filterProductByPrice;
-    },
-    filterName() {
-      this.ProductByOrderFilter;
-    },
-    filterOption() {
-      this.ProductByOrderFilter;
     },
     paginationNum() {
       this.pageSize = this.paginationNum;

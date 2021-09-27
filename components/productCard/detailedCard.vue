@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-alert width="500" class="alert" :value="alert" :type="alertType">
+    <v-alert width="auto" class="alert" :value="alert" :type="alertType">
       {{ alertMsg }}
     </v-alert>
 
@@ -743,7 +743,7 @@ export default {
   position: fixed;
   top: 12%;
   right: 5%;
-  padding: 0 20px;
+  padding: 10px 20px;
 }
 @media (max-width: 900px) {
   .card-title {
@@ -752,6 +752,9 @@ export default {
     letter-spacing: 0.05rem;
     color: rgb(82, 82, 82);
     line-height: 2rem;
+  }
+  .alert {
+    padding: 10px -50px !important;
   }
 }
 </style>

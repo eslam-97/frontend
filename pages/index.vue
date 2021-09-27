@@ -10,25 +10,29 @@
       <banner class="mt-10 mb-10" />
 
       <slider
+        v-if="newArrival"
         @display-alert="displayAlert($event)"
-        :products="newArrival.data"
+        :products="newArrival"
         class="mt-15"
         :sliderTitle="$t('NewArrivals')"
       />
 
       <v-divider class="mx-16 mt-7 mb-15"></v-divider>
       <slider
+        v-if="hotOffers"
         @display-alert="displayAlert($event)"
-        :products="hotOffers.data"
+        :products="hotOffers"
         :sliderTitle="$t('HotOffers')"
       />
 
       <v-divider class="mx-16 mt-7 mb-15"></v-divider>
       <slider
+        v-if="bestSeller"
         @display-alert="displayAlert($event)"
-        :products="bestSeller.data"
+        :products="bestSeller"
         :sliderTitle="$t('BestSellers')"
       />
+
       <v-divider class="mx-16 mt-7 mb-15"></v-divider>
     </v-container>
   </div>
@@ -53,13 +57,12 @@ export default {
       type: "success"
     };
   },
-
   asyncData(context) {
     return (
+      context.store.dispatch("home/productCategories"),
       context.store.dispatch("home/hotOffers"),
       context.store.dispatch("home/newArrival"),
-      context.store.dispatch("home/bestSeller"),
-      context.store.dispatch("home/productCategories")
+      context.store.dispatch("home/bestSeller")
     );
   },
 

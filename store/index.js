@@ -24,11 +24,11 @@ export const getters = {
 };
 
 export const actions = {
+
   async addToUserCart({ commit }, [usersId, productId, quantity]) {
     await axios
-      .post("http://localhost:8000/api/addToUserCart", {
+      .post(`http://localhost:8000/api/user/cart/product/${productId}`, {
         usersId: usersId,
-        productId: productId,
         quantity: quantity
       })
       .then(res => {
@@ -39,9 +39,10 @@ export const actions = {
       });
   },
 
+
   async userCartProducts({ commit }, [id]) {
     await axios
-      .get("http://localhost:8000/api/userCartProducts", {
+      .get("http://localhost:8000/api/user/cart/products", {
         params: {
           id: id
         }
@@ -54,12 +55,12 @@ export const actions = {
       });
   },
 
+
   async deleteCartProduct({}, [userId, productId]) {
     await axios
-      .delete("http://localhost:8000/api/deleteCartProduct", {
+      .delete(`http://localhost:8000/api/user/cart/product/${productId}`, {
         params: {
           userId: userId,
-          productId: productId
         }
       })
       .then(res => {})
@@ -68,11 +69,11 @@ export const actions = {
       });
   },
 
+
   async addToUserWishList({ commit }, [usersId, productId]) {
     await axios
-      .post("http://localhost:8000/api/addToUserWishList", {
+      .post(`http://localhost:8000/api/user/wishlist/product/${productId}`, {
         usersId: usersId,
-        productId: productId
       })
       .then(res => {
         commit("setAddToWishListMsg", res.data);
@@ -82,9 +83,10 @@ export const actions = {
       });
   },
 
+
   async userWishlistProducts({ commit }, [usersId]) {
     await axios
-      .get("http://localhost:8000/api/userWishlistProducts", {
+      .get(`http://localhost:8000/api/user/wishlist/products`, {
         params: {
           usersId: usersId
         }
@@ -97,12 +99,12 @@ export const actions = {
       });
   },
 
-  async deleteWishlistProduct({ commit, state }, [userId, productId]) {
+
+  async deleteWishlistProduct({ }, [userId, productId]) {
     await axios
-      .delete("http://localhost:8000/api/deleteWishlistProduct", {
+      .delete(`http://localhost:8000/api/user/wishlist/product/${productId}`, {
         params: {
           userId: userId,
-          productId: productId
         }
       })
       .then(res => {})
@@ -111,12 +113,12 @@ export const actions = {
       });
   },
 
+
   async productSpecs({ commit }, id) {
     try {
-      const res = await axios.get("http://localhost:8000/api/productSpecs", {
+      const res = await axios.get(`http://localhost:8000/api/product/${id}/specs`, {
         params: {
           lang: this.$i18n.locale,
-          id: id
         }
       });
       commit("setProductSpecs", res.data);
@@ -125,26 +127,23 @@ export const actions = {
     }
   },
 
+
   async ratingUsers({ commit }, id) {
     try {
-      const res = await axios.get("http://localhost:8000/api/ratingUsers", {
-        params: {
-          id: id
-        }
-      });
+      const res = await axios.get(`http://localhost:8000/api/product/${id}/reviewers`);
       commit("setRatingUsers", res.data);
     } catch (Error) {
       console.log(Error);
     }
   },
 
-  async addRating({ commit, state }, [text, rate, usersId, productId]) {
+
+  async addRating({ commit }, [text, rate, usersId, productId]) {
     await axios
-      .post("http://localhost:8000/api/addRating", {
+      .post(`http://localhost:8000/api/product/${productId}/review`, {
         text: text,
         rate: rate,
         usersId: usersId,
-        productId: productId
       })
       .then(res => {
         commit("setAddToWishListMsg", res.data);

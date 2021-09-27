@@ -3,12 +3,12 @@ import colors from 'vuetify/es5/util/colors'
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - Frontend',
-    title: 'Frontend',
+    titleTemplate: '',
+    title: 'TECH SHOP',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' }
+      { hid: 'description', name: 'description', content: 'Multi Language E-commerce Website For  Selling Laptops, Mobiles, Tablets' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -52,7 +52,6 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    // baseURL:'http://www.localhost:8000/api/'
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa

@@ -26,9 +26,10 @@ export const getters = {
   getProductCategories: state => state.productCategories
 };
 export const actions = {
+
   async allProducts({ commit }, [type]) {
     try {
-      const res = await axios.get("http://localhost:8000/api/allProducts", {
+      const res = await axios.get("http://localhost:8000/api/products", {
         params: {
           type: type
         }
@@ -39,11 +40,12 @@ export const actions = {
     }
   },
 
+
   async similarProducts({ commit }, [type]) {
     try {
-      const res = await axios.get("http://localhost:8000/api/allProducts", {
+      const res = await axios.get("http://localhost:8000/api/products", {
         params: {
-          type: type
+          type: type,
         }
       });
       commit("setSimilarProducts", res.data);
@@ -52,49 +54,62 @@ export const actions = {
     }
   },
 
+
   async product({ commit }, [id]) {
     try {
-      const res = await axios.get("http://localhost:8000/api/product", {
-        params: {
-          id: id
-        }
-      });
+      const res = await axios.get(`http://localhost:8000/api/product/${id}`);
       commit("setSingleProduct", res.data);
     } catch (Error) {
       console.log(Error);
     }
   },
 
+
   async hotOffers({ commit }) {
     try {
-      const res = await axios.get("http://localhost:8000/api/hotOffers");
+      const res = await axios.get("http://localhost:8000/api/products",
+      {params:{
+        order_by:'discount',
+        order_dir:'desc'
+      }});
       commit("setHotOffers", res.data);
     } catch (Error) {
       console.log(Error);
     }
   },
 
+
   async newArrival({ commit }) {
     try {
-      const res = await axios.get("http://localhost:8000/api/newArrival");
+      const res = await axios.get("http://localhost:8000/api/products",
+      {params:{
+        order_by:'updated_at',
+        order_dir:'desc'
+      }});
       commit("setNewArrival", res.data);
     } catch (Error) {
       console.log(Error);
     }
   },
 
+
   async bestSeller({ commit }) {
     try {
-      const res = await axios.get("http://localhost:8000/api/bestSeller");
+      const res = await axios.get("http://localhost:8000/api/products",
+      {params:{
+        order_by:'sold',
+        order_dir:'desc'
+      }});
       commit("setBestSeller", res.data);
     } catch (Error) {
       console.log(Error);
     }
   },
 
+
   async searchProducts({ commit }, searchInput) {
     try {
-      const res = await axios.get("http://localhost:8000/api/search", {
+      const res = await axios.get("http://localhost:8000/api/products/search", {
         params: {
           searchInput: searchInput
         }
@@ -105,10 +120,11 @@ export const actions = {
     }
   },
 
+
   async productCategories({ commit }) {
     try {
       const res = await axios.get(
-        "http://localhost:8000/api/productCategories"
+        "http://localhost:8000/api/products/categories"
       );
       commit("setProductCategories", res.data);
     } catch (Error) {
@@ -116,6 +132,7 @@ export const actions = {
     }
   }
 };
+
 export const mutations = {
   setProducts: (state, data) => (state.products = data),
   setSingleProduct: (state, data) => (state.singleProduct = data),

@@ -23,7 +23,7 @@
       <v-row class="row-margin" justify="center">
         <v-col cols="6" sm="5" md="3">
           <nuxt-link :to="localePath('/laptop')" class="text-decoration-none">
-            <v-card @click="laptopProducts()" hover>
+            <v-card hover>
               <v-img
                 contain
                 max-height="250"
@@ -43,7 +43,7 @@
 
         <v-col cols="6" sm="5" md="3">
           <nuxt-link :to="localePath('/mobile')" class="text-decoration-none">
-            <v-card @click="mobileProducts()" hover>
+            <v-card hover>
               <v-img
                 max-height="250"
                 contain
@@ -61,7 +61,7 @@
 
         <v-col cols="6" sm="5" md="3">
           <nuxt-link :to="localePath('/tablet')" class="text-decoration-none">
-            <v-card @click="tabletProducts()" hover>
+            <v-card hover>
               <v-img
                 max-height="200"
                 contain
@@ -82,7 +82,7 @@
             :to="localePath('/accessories')"
             class="text-decoration-none"
           >
-            <v-card @click="accessoriesProducts()" hover>
+            <v-card hover>
               <v-img
                 max-height="250"
                 contain

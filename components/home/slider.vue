@@ -11,7 +11,7 @@
         <v-col md="11" cols="12">
           <agile dir="auto" ref="carousel" :options="myOptions" class="slider">
             <div
-              v-for="product in products.slice(0, 15)"
+              v-for="product in products.slice(0, 10)"
               :key="product.id"
               class="card-wrapper"
             >

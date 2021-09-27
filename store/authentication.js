@@ -23,6 +23,7 @@ export const getters = {
   getUpdatePasswordStatus: state => state.updatePasswordStatus
 };
 export const actions = {
+
   async register({ commit }, formData) {
     axios.get("http://localhost:8000/sanctum/csrf-cookie").then(Response => {
       axios
@@ -38,6 +39,7 @@ export const actions = {
         });
     });
   },
+
 
   async login({ commit }, [email, password]) {
     await this.$auth.loginWith("laravelSanctum", {
@@ -55,6 +57,7 @@ export const actions = {
       });
   },
 
+
   async logout({ commit }) {
     await this.$auth.logout();
     commit("setCartProducts", [], { root: true });
@@ -64,7 +67,7 @@ export const actions = {
   },
 
   async updateUserInfo({ commit }, formData) {
-    await axios.post("http://localhost:8000/api/updateUser", formData, {
+    await axios.put(`http://localhost:8000/api/user/${formData.id}`, formData, {
         headers: {
           "content-type": "multipart/form-data; charset=utf-8; boundary=" +Math.random().toString().substr(2)
         }}).then(res => {
@@ -76,9 +79,10 @@ export const actions = {
       });
   },
 
+
   async updateUserPassword({ commit, state }, [id, password, newPassword]) {
-    await axios.post("http://localhost:8000/api/updateUserPassword",
-        { id: id,
+    await axios.put(`http://localhost:8000/api/user-password/${id}`,
+        { 
           password: password,
           newPassword: newPassword},
           { headers: {

@@ -93,7 +93,7 @@ export default {
         this.products.forEach(product => {
           let name = product.name
             .split(" ")
-            .slice(0, 3)
+            .slice(0, 5)
             .join(" ");
           item = Object.assign(
             {},

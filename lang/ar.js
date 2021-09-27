@@ -31,7 +31,7 @@ export default{
     sortBy:'ترتيب حسب',
     name:'الإ سم',
     Price:'السعر',
-    Rating:'التقييمات',
+    popular:'الأكثر شيوعا',
     Ascending:'تصاعدي',
     Descending:'تنازلي',
     RefineSearch:'خيارات البحث',

@@ -27,7 +27,7 @@
             </v-expansion-panel-header>
           </v-hover>
 
-          <v-expansion-panel-content>
+          <v-expansion-panel-content class="pb-0">
             <div
               class="d-flex align-center"
               v-for="brand in brands"
@@ -35,22 +35,20 @@
             >
               <v-checkbox
                 v-if="$i18n.locale == 'en'"
-                @click="getBrand(brand.en_brand)"
-                multiple
+                @click="filterByBrand()"
                 v-model="brandFilters"
                 :value="brand.en_brand"
                 class=""
               >
                 <template v-slot:label>
-                  <span>{{ brand.en_brand }}</span>
+                  <span class="black--text">{{ brand.en_brand }}</span>
                   <small class="pl-2"> ({{ brand.product_count }})</small>
                 </template>
               </v-checkbox>
 
               <v-checkbox
                 v-if="$i18n.locale == 'ar'"
-                @click="getBrand(brand.en_brand)"
-                multiple
+                @click="filterByBrand()"
                 v-model="brandFilters"
                 :value="brand.en_brand"
                 class=""
@@ -122,12 +120,11 @@
                 v-if="$i18n.locale == 'en'"
                 v-model="colorFilters"
                 :value="item.color"
-                @click="getColor(item.color)"
-                multiple
+                @click="filterByColor()"
                 class=""
               >
                 <template v-slot:label>
-                  <span>{{ item.color }}</span>
+                  <span class="black--text">{{ item.color }}</span>
                   <small class="pl-2"> ({{ item.quantity }})</small>
                 </template>
               </v-checkbox>
@@ -135,12 +132,11 @@
                 v-if="$i18n.locale == 'ar'"
                 v-model="colorFilters"
                 :value="item.color"
-                @click="getColor(item.color)"
-                multiple
+                @click="filterByColor()"
                 class=""
               >
                 <template v-slot:label>
-                  <span>{{ item.ar_color }}</span>
+                  <span class="black--text">{{ item.ar_color }}</span>
                   <small class="pr-2"> ({{ item.quantity }})</small>
                 </template>
               </v-checkbox>
@@ -171,27 +167,25 @@
             >
               <v-checkbox
                 v-if="$i18n.locale == 'en'"
-                @click="getOS(item.OperatingSystem)"
-                multiple
+                @click="filterByOS()"
                 v-model="OSFilters"
                 :value="item.OperatingSystem"
                 class=""
               >
                 <template v-slot:label>
-                  <span>{{ item.OperatingSystem }}</span>
+                  <span class="black--text">{{ item.OperatingSystem }}</span>
                   <small class="pl-2"> ({{ item.quantity }})</small>
                 </template>
               </v-checkbox>
               <v-checkbox
                 v-if="$i18n.locale == 'ar'"
-                @click="getOS(item.OperatingSystem)"
-                multiple
+                @click="filterByOS()"
                 v-model="OSFilters"
                 :value="item.OperatingSystem"
                 class=""
               >
                 <template v-slot:label>
-                  <span>{{ item.ar_OperatingSystem }}</span>
+                  <span class="black--text">{{ item.ar_OperatingSystem }}</span>
                   <small class="pr-2"> ({{ item.quantity }})</small>
                 </template>
               </v-checkbox>
@@ -204,31 +198,37 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "sidebar",
   data() {
     return {
+      radioGroup: "",
       panel: [0, 1, 2, 3],
       range: this.$store.state.filters.productPrice,
-      brandFilters: [],
-      colorFilters: [],
-      OSFilters: []
+      brandFilters: null,
+      colorFilters: null,
+      OSFilters: null
     };
   },
 
   props: ["type"],
 
-  mounted() {
-    if (this.selectedFilters.length > 0) {
-      this.brandFilters = this.selectedFilters.slice(0);
-    }
-  },
+  mounted() {},
 
-  async fetch() {
-    await this.$store.dispatch("filters/productBrand", [this.type]),
-      this.$store.dispatch("filters/productColor", [this.type]),
-      this.$store.dispatch("filters/productOperatingSystem", [this.type]);
+  fetch() {
+    if (this.selectedBrand.length > 0) {
+      this.brandFilters = this.selectedBrand;
+      this.filterByBrand();
+      this.$store.dispatch("filters/productBrand", [this.type]);
+      setTimeout(() => {
+        this.$store.commit("filters/setSelectedBrand", []);
+      }, 1000);
+    } else {
+      this.$store.dispatch("filters/productBrand", [this.type]),
+        this.$store.dispatch("filters/productColor", [this.type]),
+        this.$store.dispatch("filters/productOperatingSystem", [this.type]);
+    }
   },
 
   methods: {
@@ -239,24 +239,78 @@ export default {
       ]);
     },
 
-    getBrand(brand) {
-      this.colorFilters = [];
-      this.OSFilters = [];
-      this.$store.dispatch("filters/productByBrand", [this.type, brand]);
+    filterByBrand() {
+      this.$store.dispatch("filters/filterProducts", [
+        this.type,
+        this.brandFilters,
+        this.colorFilters,
+        this.OSFilters
+      ]);
+      this.$store.dispatch("filters/productColor", [
+        this.type,
+        this.brandFilters,
+        this.OSFilters
+      ]),
+        this.$store.dispatch("filters/productOperatingSystem", [
+          this.type,
+          this.brandFilters,
+          this.colorFilters
+        ]);
+      this.$store.commit("filters/setSelectedFilters", [
+        this.brandFilters,
+        this.colorFilters,
+        this.OSFilters
+      ]);
       this.$store.commit("filters/setProductPriceFiltered", []);
     },
 
-    getColor(color) {
-      this.brandFilters = [];
-      this.OSFilters = [];
-      this.$store.dispatch("filters/productByColor", [this.type, color]);
+    filterByColor() {
+      this.$store.dispatch("filters/filterProducts", [
+        this.type,
+        this.brandFilters,
+        this.colorFilters,
+        this.OSFilters
+      ]);
+      this.$store.dispatch("filters/productBrand", [
+        this.type,
+        this.colorFilters,
+        this.OSFilters
+      ]),
+        this.$store.dispatch("filters/productOperatingSystem", [
+          this.type,
+          this.brandFilters,
+          this.colorFilters
+        ]);
+      this.$store.commit("filters/setSelectedFilters", [
+        this.brandFilters,
+        this.colorFilters,
+        this.OSFilters
+      ]);
       this.$store.commit("filters/setProductPriceFiltered", []);
     },
 
-    getOS(OS) {
-      this.colorFilters = [];
-      this.brandFilters = [];
-      this.$store.dispatch("filters/productByOperatingSystem", [this.type, OS]);
+    filterByOS() {
+      this.$store.dispatch("filters/filterProducts", [
+        this.type,
+        this.brandFilters,
+        this.colorFilters,
+        this.OSFilters
+      ]);
+      this.$store.dispatch("filters/productBrand", [
+        this.type,
+        this.colorFilters,
+        this.OSFilters
+      ]),
+        this.$store.dispatch("filters/productColor", [
+          this.type,
+          this.brandFilters,
+          this.OSFilters
+        ]),
+        this.$store.commit("filters/setSelectedFilters", [
+          this.brandFilters,
+          this.colorFilters,
+          this.OSFilters
+        ]);
       this.$store.commit("filters/setProductPriceFiltered", []);
     }
   },
@@ -267,7 +321,7 @@ export default {
       price: "filters/getProductPrice",
       colors: "filters/getProductColor",
       operatingSystem: "filters/getProductOperatingSystem",
-      selectedFilters: "filters/getSelectedFilters"
+      selectedBrand: "filters/getSelectedBrand"
     })
   },
   watch: {
@@ -275,11 +329,10 @@ export default {
       this.range = this.$store.state.filters.productPrice;
     },
 
-    selectedFilters() {
-      if (this.selectedFilters.length > 0) {
-        console.log(this.selectedFilters);
-        this.brandFilters = this.selectedFilters.slice(0);
-        console.log(this.brandFilters);
+    selectedBrand() {
+      if (this.selectedBrand.length > 0) {
+        this.brandFilters = this.selectedBrand;
+        this.filterByBrand();
       }
     }
   }

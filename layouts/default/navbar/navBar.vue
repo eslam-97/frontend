@@ -8,21 +8,25 @@
       scroll-target=""
       color=" blue-grey lighten-5"
     >
-      <p :dir="$i18n.locale == 'ar' ? 'rtl' : 'ltr'" class="header-title">
-        shopiland
-      </p>
+      <nuxt-link class="text-decoration-none black--text" to="/">
+        <p :dir="$i18n.locale == 'ar' ? 'rtl' : 'ltr'" class="header-title">
+          TECH SHOP
+        </p>
+      </nuxt-link>
       <template v-slot:extension>
         <v-tabs
           @click="tab = 5"
+          hide-slider
           :dir="$i18n.locale == 'ar' ? 'rtl' : 'ltr'"
           :optional="true"
           active-class="orange--text text--darken-4"
           v-model="tab"
           class="nav-tabs"
         >
-          <v-tabs-slider color="orange darken-2"></v-tabs-slider>
           <v-tab
-            @click.capture.stop="tab = 0"
+            nuxt
+            active-class="orange--text text--darken-4"
+            to="/laptop"
             :dir="$i18n.locale == 'ar' ? 'rtl' : 'ltr'"
             @mouseover="tab = 0"
             @mouseout="tab = null"
@@ -30,9 +34,10 @@
           >
             {{ $t("LAPTOP") }}
           </v-tab>
-
           <v-tab
-            @click.capture.stop="tab = 1"
+            nuxt
+            to="/mobile"
+            active-class="orange--text text--darken-4"
             :dir="$i18n.locale == 'ar' ? 'rtl' : 'ltr'"
             @mouseover="tab = 1"
             @mouseout="tab = null"
@@ -42,7 +47,9 @@
           </v-tab>
 
           <v-tab
-            @click.capture.stop="tab = 2"
+            nuxt
+            to="/tablet"
+            active-class="orange--text text--darken-4"
             :dir="$i18n.locale == 'ar' ? 'rtl' : 'ltr'"
             @mouseover="tab = 2"
             @mouseout="tab = null"
@@ -52,7 +59,9 @@
           </v-tab>
 
           <v-tab
-            @click.capture.stop="tab = 3"
+            nuxt
+            active-class="orange--text text--darken-4"
+            to="accessories"
             :dir="$i18n.locale == 'ar' ? 'rtl' : 'ltr'"
             @mouseover="tab = 3"
             @mouseout="tab = null"
@@ -71,7 +80,7 @@
               <v-list class="grey lighten-2" nav>
                 <v-list-item
                   v-for="brand in productCategories.LAPTOP"
-                  @click="getBrand('LAPTOP', brand.en_brand)"
+                  @click="filterByBrand('LAPTOP', brand.en_brand)"
                   :key="brand.en_brand"
                   link
                 >
@@ -95,7 +104,7 @@
                 <v-list-item
                   v-for="brand in productCategories.MOBILE"
                   :key="brand.en_brand"
-                  @click="getBrand('MOBILE', brand.en_brand)"
+                  @click="filterByBrand('MOBILE', brand.en_brand)"
                   class="text-decoration-none"
                 >
                   <span v-if="$i18n.locale == 'en'" class="black--text">
@@ -118,7 +127,7 @@
                 <v-list-item
                   v-for="brand in productCategories.TABLET"
                   :key="brand.en_brand"
-                  @click="getBrand('TABLET', brand.en_brand)"
+                  @click="filterByBrand('TABLET', brand.en_brand)"
                   link
                 >
                   <span v-if="$i18n.locale == 'en'" class="black--text">
@@ -141,7 +150,7 @@
                 <v-list-item
                   v-for="brand in productCategories.ACCESSORIES"
                   :key="brand.en_brand"
-                  @click="getBrand('ACCESSORIES', brand.en_brand)"
+                  @click="filterByBrand('ACCESSORIES', brand.en_brand)"
                   link
                 >
                   <span v-if="$i18n.locale == 'en'" class="black--text">
@@ -185,11 +194,11 @@ export default {
   },
 
   methods: {
-    getBrand(type, brand) {
-      console.log(brand);
-      this.$store.commit("filters/setSelectedFilters", []);
-      this.$store.dispatch("filters/productByBrand", [type, brand]);
+    filterByBrand(type, brand) {
       this.$router.push(this.localePath("/" + type));
+      setTimeout(() => {
+        this.$store.commit("filters/setSelectedBrand", brand);
+      }, 100);
     }
   },
 
@@ -227,7 +236,7 @@ export default {
     #nav-tabs-position {
       background-color: transparent;
       .nav-content {
-        width: 700px;
+        width: 500px;
       }
     }
   }

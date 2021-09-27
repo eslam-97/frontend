@@ -31,7 +31,7 @@ export default{
     sortBy:'Sort By',
     name:'Name',
     Price:'Price',
-    Rating:'Rating',
+    popular:'popular',
     Ascending:'Ascending',
     Descending:'Descending',
     RefineSearch:'Refine Search',

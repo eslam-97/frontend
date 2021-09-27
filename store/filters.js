@@ -12,10 +12,8 @@ export const state = () => ({
   productPriceFiltered: "",
   productColor: "",
   productOperatingSystem: "",
-  checkboxValue: "",
   selectedFilters: [],
-  orderedByFilter: "",
-  orderedByOption: "",
+  selectedBrand: null,
   paginationNum: 0
 });
 export const getters = {
@@ -26,19 +24,19 @@ export const getters = {
   getPriceFiltered: state => state.productPriceFiltered,
   getProductColor: state => state.productColor,
   getProductOperatingSystem: state => state.productOperatingSystem,
-  getCheckboxValue: state => state.checkboxValue,
   getSelectedFilters: state => state.selectedFilters,
-  getOrderedByFilter: state => state.orderedByFilter,
-  getOrderedByOption: state => state.orderedByOption,
+  getSelectedBrand: state => state.selectedBrand,
   getPaginationNum: state => state.paginationNum
 };
 export const actions = {
-  async productBrand({ commit, state }, [type]) {
+
+  async productBrand({ commit }, [type, color, OperatingSystem]) {
     try {
-      const res = await axios.get("http://localhost:8000/api/productBrand", {
+      const res = await axios.get("http://localhost:8000/api/products/brands", {
         params: {
           type: type,
-          lang: this.$i18n.locale
+          color: color,
+          OperatingSystem: OperatingSystem,
         }
       });
       commit("setProductBrand", res.data);
@@ -47,12 +45,14 @@ export const actions = {
     }
   },
 
-  async productColor({ commit }, [type]) {
+
+  async productColor({ commit }, [type, brand, OperatingSystem ]) {
     try {
-      const res = await axios.get("http://localhost:8000/api/productColor", {
+      const res = await axios.get("http://localhost:8000/api/products/colors", {
         params: {
           type: type,
-          lang: this.$i18n.locale
+          brand: brand,
+          OperatingSystem: OperatingSystem,
         }
       });
       commit("setProductColor", res.data);
@@ -61,14 +61,15 @@ export const actions = {
     }
   },
 
-  async productOperatingSystem({ commit }, [type]) {
+  async productOperatingSystem({ commit }, [type, brand, color]) {
     try {
       const res = await axios.get(
-        "http://localhost:8000/api/productOperatingSystem",
+        "http://localhost:8000/api/products/operating-systems",
         {
           params: {
             type: type,
-            lang: this.$i18n.locale
+            brand: brand,
+            color: color,
           }
         }
       );
@@ -78,104 +79,55 @@ export const actions = {
     }
   },
 
+
   //###############################################################################################
 
-  async productByBrand({ commit }, [type, brand]) {
+
+  async filterProducts({ commit }, [type, brand, color, operatingSystem, order_by, order_dir]) {
     try {
-      const res = await axios.get("http://localhost:8000/api/productByBrand", {
+      const res = await axios.get(`http://localhost:8000/api/products`, {
         params: {
           type: type,
-          brand: brand
+          brand: brand,
+          color: color,
+          operatingSystem: operatingSystem,
+          order_by: order_by,
+          order_dir: order_dir,
         }
       });
 
-      commit("setFilterdProduct", { res: res, filter: brand });
-      commit("setCheckboxValue", true);
+      commit("setFilterdProduct", res.data);
     } catch (Error) {
       console.log(Error);
-    }
+    } 
   },
-  async productByColor({ commit }, [type, color]) {
+
+  async sortProducts({ commit }, [type, order_by, order_dir]) {
     try {
-      const res = await axios.get("http://localhost:8000/api/productByColor", {
+      const res = await axios.get(`http://localhost:8000/api/products`, {
         params: {
           type: type,
-          color: color
+          order_by: order_by,
+          order_dir: order_dir,
         }
       });
-      commit("setFilterdProduct", { res: res, filter: "color" });
-      commit("setCheckboxValue", true);
-    } catch (Error) {
-      console.log(Error);
-    }
-  },
-  async productByOperatingSystem({ commit }, [type, operatingSystem]) {
-    try {
-      const res = await axios.get(
-        "http://localhost:8000/api/productByOperatingSystem",
-        {
-          params: {
-            type: type,
-            operatingSystem: operatingSystem
-          }
-        }
-      );
 
-      commit("setFilterdProduct", { res: res, filter: "OS" });
-      commit("setCheckboxValue", true);
+      commit("setFilterdProduct", res.data);
     } catch (Error) {
       console.log(Error);
-    }
-  }
+    } 
+  },
+
 };
 export const mutations = {
   setProductBrand: (state, data) => (state.productBrand = data),
+  setProductColor: (state, data) => (state.productColor = data),
+  setProductOperatingSystem: (state, data) => (state.productOperatingSystem = data),
+  setSelectedBrand: (state, data) => (state.selectedBrand = data),
+  setSelectedFilters: (state, data) => (state.selectedFilters = data),
+  setFilterdProduct: (state, payload) => (state.filterdProduct = payload),
+  setPaginationValue: (state, data) => (state.paginationNum = data),
   setPriceRange: (state, data) => (state.productPrice = data),
   setProductPriceFiltered: (state, data) => (state.productPriceFiltered = data),
-  setProductColor: (state, data) => (state.productColor = data),
-  setProductOperatingSystem: (state, data) =>
-    (state.productOperatingSystem = data),
-  setSelectedFilters: (state, data) => (state.selectedFilters = data),
-  setCheckboxValue: (state, data) => (state.checkboxValue = data),
-  setOrderedByOption: (state, data) => [
-    (state.orderedByOption = data[0]),
-    (state.orderedByFilter = data[1])
-  ],
-  setOrderedByFilter: (state, data) => [
-    (state.orderedByFilter = data[0]),
-    (state.orderedByOption = data[1])
-  ],
-  setPaginationNum: (state, data) => (state.paginationNum = data),
-  setProductType: (state, data) => (state.productType = data),
-  setFilterdProduct(state, payload) {
-    if (state.filterdProduct.length > 0) {
-      if (state.selectedFilters.includes(payload.filter)) {
-        const newArr = payload.res.data.map(element => {
-          return element.id;
-        });
-        const ArrIndex = [];
-        state.filterdProduct.filter((element, index) => {
-          if (newArr.includes(element.id)) {
-            ArrIndex.push(index);
-            payload.res.data = [];
-          }
-        });
-        for (let i = ArrIndex.length - 1; i >= 0; i--) {
-          state.filterdProduct.splice(ArrIndex[i], 1);
-        }
-        state.filterdProduct.push(...payload.res.data);
-      } else {
-        state.selectedFilters = [];
-        state.selectedFilters.push(payload.filter);
-        state.filterdProduct = [];
-        state.filterdProduct.push(...payload.res.data);
-      }
-    } else {
-      state.selectedFilters.push(payload.filter);
-      if (!payload.res.data) {
-        state.filterdProduct = [];
-      }
-      state.filterdProduct = payload.res.data;
-    }
-  }
+  // setProductType: (state, data) => (state.productType = data),
 };
