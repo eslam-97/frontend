@@ -27,9 +27,12 @@ export const actions = {
 
   async addToUserCart({ commit }, [usersId, productId, quantity]) {
     await axios
-      .post(`http://localhost:8000/api/user/cart/product/${productId}`, {
-        usersId: usersId,
+      .post(`http://localhost:8000/api/user/cart/products/${productId}`, {
         quantity: quantity
+      },{
+        headers:{
+          'Authorization':this.$auth.strategy.token.get()
+        }
       })
       .then(res => {
         commit("setAddToCartMsg", res.data);
@@ -40,11 +43,11 @@ export const actions = {
   },
 
 
-  async userCartProducts({ commit }, [id]) {
+  async userCartProducts({ commit },[id]) {
     await axios
       .get("http://localhost:8000/api/user/cart/products", {
-        params: {
-          id: id
+        headers:{
+          'Authorization':this.$auth.strategy.token.get()
         }
       })
       .then(res => {
@@ -58,9 +61,9 @@ export const actions = {
 
   async deleteCartProduct({}, [userId, productId]) {
     await axios
-      .delete(`http://localhost:8000/api/user/cart/product/${productId}`, {
-        params: {
-          userId: userId,
+      .delete(`http://localhost:8000/api/user/cart/products/${productId}`, {
+        headers:{
+          'Authorization':this.$auth.strategy.token.get()
         }
       })
       .then(res => {})
@@ -72,8 +75,10 @@ export const actions = {
 
   async addToUserWishList({ commit }, [usersId, productId]) {
     await axios
-      .post(`http://localhost:8000/api/user/wishlist/product/${productId}`, {
-        usersId: usersId,
+      .post(`http://localhost:8000/api/user/wishlist/products/${productId}`, {},{
+        headers:{
+          'Authorization':this.$auth.strategy.token.get()
+        }
       })
       .then(res => {
         commit("setAddToWishListMsg", res.data);
@@ -87,8 +92,8 @@ export const actions = {
   async userWishlistProducts({ commit }, [usersId]) {
     await axios
       .get(`http://localhost:8000/api/user/wishlist/products`, {
-        params: {
-          usersId: usersId
+        headers:{
+          'Authorization':this.$auth.strategy.token.get()
         }
       })
       .then(res => {
@@ -102,9 +107,9 @@ export const actions = {
 
   async deleteWishlistProduct({ }, [userId, productId]) {
     await axios
-      .delete(`http://localhost:8000/api/user/wishlist/product/${productId}`, {
-        params: {
-          userId: userId,
+      .delete(`http://localhost:8000/api/user/wishlist/products/${productId}`, {
+        headers:{
+          'Authorization':this.$auth.strategy.token.get()
         }
       })
       .then(res => {})
@@ -144,6 +149,10 @@ export const actions = {
         text: text,
         rate: rate,
         usersId: usersId,
+      },{
+        headers:{
+          'Authorization':this.$auth.strategy.token.get()
+        }
       })
       .then(res => {
         commit("setAddToWishListMsg", res.data);

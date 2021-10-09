@@ -6,13 +6,14 @@
       fixed
       hide-on-scroll
       scroll-target=""
-      color=" blue-grey lighten-5"
+      color="blue-grey lighten-5"
     >
       <nuxt-link class="text-decoration-none black--text" to="/">
         <p :dir="$i18n.locale == 'ar' ? 'rtl' : 'ltr'" class="header-title">
-          TECH SHOP
+          TECH-SHOP
         </p>
       </nuxt-link>
+
       <template v-slot:extension>
         <v-tabs
           @click="tab = 5"
@@ -75,10 +76,12 @@
               class="nav-content"
               @mouseover="tab = 0"
               @mouseleave="tab = null"
-              transition="fade-transition"
+              transition="expand-transition"
             >
-              <v-list class="grey lighten-2" nav>
+              <v-list elevation="15" rounded class="nav-color pb-0" nav>
                 <v-list-item
+                  ripple
+                  class="mr-2 px-6"
                   v-for="brand in productCategories.LAPTOP"
                   @click="filterByBrand('LAPTOP', brand.en_brand)"
                   :key="brand.en_brand"
@@ -91,6 +94,7 @@
                     {{ brand.ar_brand }}</span
                   >
                 </v-list-item>
+                <v-divider class="grey lighten-2"></v-divider>
               </v-list>
             </v-tab-item>
 
@@ -98,14 +102,14 @@
               class="nav-content"
               @mouseover="tab = 1"
               @mouseleave="tab = null"
-              transition="fade-transition"
+              transition="expand-transition"
             >
-              <v-list class="grey lighten-2">
+              <v-list elevation="15" rounded class="nav-color pb-0" nav>
                 <v-list-item
+                  class="mr-2 px-6"
                   v-for="brand in productCategories.MOBILE"
                   :key="brand.en_brand"
                   @click="filterByBrand('MOBILE', brand.en_brand)"
-                  class="text-decoration-none"
                 >
                   <span v-if="$i18n.locale == 'en'" class="black--text">
                     {{ brand.en_brand }}</span
@@ -114,6 +118,7 @@
                     {{ brand.ar_brand }}</span
                   >
                 </v-list-item>
+                <v-divider class="grey lighten-2"></v-divider>
               </v-list>
             </v-tab-item>
 
@@ -121,10 +126,11 @@
               class="nav-content"
               @mouseover="tab = 2"
               @mouseleave="tab = null"
-              transition="fade-transition"
+              transition="expand-transition"
             >
-              <v-list class="grey lighten-2">
+              <v-list elevation="15" rounded class="nav-color pb-0" nav>
                 <v-list-item
+                  class="mr-2 px-6"
                   v-for="brand in productCategories.TABLET"
                   :key="brand.en_brand"
                   @click="filterByBrand('TABLET', brand.en_brand)"
@@ -137,6 +143,7 @@
                     {{ brand.ar_brand }}</span
                   >
                 </v-list-item>
+                <v-divider class="grey lighten-2"></v-divider>
               </v-list>
             </v-tab-item>
 
@@ -144,10 +151,11 @@
               class="nav-content"
               @mouseover="tab = 3"
               @mouseleave="tab = null"
-              transition="fade-transition"
+              transition="expand-transition"
             >
-              <v-list class="grey lighten-2">
+              <v-list elevation="15" rounded class="nav-color pb-0" nav>
                 <v-list-item
+                  class="mr-2 px-6"
                   v-for="brand in productCategories.ACCESSORIES"
                   :key="brand.en_brand"
                   @click="filterByBrand('ACCESSORIES', brand.en_brand)"
@@ -160,6 +168,7 @@
                     {{ brand.ar_brand }}</span
                   >
                 </v-list-item>
+                <v-divider class="grey lighten-2"></v-divider>
               </v-list>
             </v-tab-item>
           </v-tabs-items>
@@ -217,6 +226,8 @@ export default {
 .app-bar {
   z-index: 999;
   .header-title {
+    font-style: italic;
+    font-family: cursive;
     letter-spacing: 0.1rem !important;
     margin: 1.3rem 0 0 2.2rem;
     font-size: 2rem;
@@ -236,10 +247,17 @@ export default {
     #nav-tabs-position {
       background-color: transparent;
       .nav-content {
-        width: 500px;
+        width: 409px;
+        height: auto;
       }
     }
   }
+}
+.nav-color {
+  background-color: rgb(247, 247, 247);
+}
+.active-tab {
+  background-color: #ffffff !important;
 }
 @media (max-width: 1200px) {
   .search-input {

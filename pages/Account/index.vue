@@ -300,7 +300,7 @@ import { ValidationProvider } from "vee-validate";
 import { ValidationObserver } from "vee-validate";
 export default {
   middleware({ app, redirect, $auth }) {
-    if (!$auth.loggedIn) {
+    if (!$auth.user) {
       if (app.i18n.vm.locale == "en") {
         return redirect("/login");
       } else if (app.i18n.vm.locale == "ar") {

@@ -7,7 +7,7 @@
     <v-container fluid>
       <loading :loading="loading" opacity="0.5" />
 
-      <banner class="mt-10 mb-10" />
+      <banner class="mt-5 mb-10" />
 
       <slider
         v-if="newArrival"
@@ -59,14 +59,15 @@ export default {
   },
 
   head: {
-    title: 'Home page',
+    title: "Home page",
     meta: [
       {
-        hid: 'Home page',
-        name: 'Home page',
-        content: 'Home page for tech shop contains categories such laptops, mobiles, tablets, acccessories'
+        hid: "Home page",
+        name: "Home page",
+        content:
+          "Home page for tech shop contains categories such laptops, mobiles, tablets, acccessories"
       }
-    ],
+    ]
   },
   asyncData(context) {
     return (

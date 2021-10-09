@@ -42,15 +42,18 @@ export const actions = {
 
 
   async login({ commit }, [email, password]) {
-    await this.$auth.loginWith("laravelSanctum", {
+     this.$auth.loginWith("laravelSanctum", {
         data: {
           email: email,
           password: password
       }})
       .then(res => {
         this.$auth.setUser(res.data.user);
-        this.$auth.setUserToken(res.data.token);
+        this.$auth.strategy.token.set("Bearer " +res.data.token);
+        this.$auth.fetchUser();
         commit("setLoginData", res.data);
+        
+
       })
       .catch(error => {
         console.log(error);
@@ -60,15 +63,16 @@ export const actions = {
 
   async logout({ commit }) {
     await this.$auth.logout();
-    commit("setCartProducts", [], { root: true });
-    commit("setWishListProducts", [], { root: true });
+    commit("setCartProducts", '', { root: true });
+    commit("setWishListProducts", '', { root: true });
     this.$auth.setUser("");
     this.$auth.setUserToken("");
   },
 
   async updateUserInfo({ commit }, formData) {
-    await axios.put(`http://localhost:8000/api/user/${formData.id}`, formData, {
+    await axios.put(`http://localhost:8000/api/user`, formData, {
         headers: {
+            'Authorization':this.$auth.strategy.token.get(),
           "content-type": "multipart/form-data; charset=utf-8; boundary=" +Math.random().toString().substr(2)
         }}).then(res => {
 
@@ -80,18 +84,16 @@ export const actions = {
   },
 
 
-  async updateUserPassword({ commit, state }, [id, password, newPassword]) {
-    await axios.put(`http://localhost:8000/api/user-password/${id}`,
+  async updateUserPassword({ commit }, [id, password, newPassword]) {
+    await axios.put(`http://localhost:8000/api/user/password`,
         { 
           password: password,
           newPassword: newPassword},
           { headers: {
-            Authorization: `Bearer ${state.token}`
+            'Authorization':this.$auth.strategy.token.get(),
           }})
       .then(res => {
-
         commit("setUpdatePasswordStatus", res.data);
-
       })
       .catch(error => {
         console.log(error);

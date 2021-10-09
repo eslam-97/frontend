@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container>
+    <v-container fluid>
       <v-row class="mb-15">
         <v-carousel
           hide-delimiter-background
@@ -121,7 +121,7 @@ export default {
 
 <style lang="scss" scoped>
 .banner-img {
-  height: 25rem;
+  height: 35rem;
   width: 100%;
   margin: auto;
 }

@@ -4,7 +4,7 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '',
-    title: 'TECH SHOP',
+    title: 'TECH-SHOP',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -47,9 +47,16 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
-    '@nuxtjs/auth-next'
+    '@nuxtjs/auth-next',
+    '@nuxtjs/laravel-echo'
+ 
+    
   ],
-
+  echo:{
+    broadcaster:'pusher',
+    cluster: 'eu',
+    key: '8bcc476e69eae81c517f',
+  },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
   },
@@ -97,17 +104,27 @@ export default {
      'laravelSanctum':{
        provider: 'laravel/sanctum',
        url:'http://localhost:8000',
+       token:{
+        required: true,
+        property: 'data.token',
+        global:true,
+        type:'Bearer'
+       },
        endpoints:{
          login:{
          url:'/api/login',
-         method:'post'
+         method:'post',
          },
          logout:{
-          url:'/api/logout',
+          url:'/api/user/logout',
           method:'post'
           },
+          user:{
+            url:'/api/user',
+            method:'get'
+          }
         }
-     }
+      }
     }
   }
 }

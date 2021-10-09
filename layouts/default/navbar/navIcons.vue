@@ -238,17 +238,8 @@
                 "
               >
                 <v-badge
-                  :value="
-                    wishListProducts.product &&
-                    wishListProducts.product.length > 0
-                      ? true
-                      : false
-                  "
-                  :content="
-                    wishListProducts.product
-                      ? wishListProducts.product.length
-                      : null
-                  "
+                  :value="wishlistNotification"
+                  :content="wishlistNotification"
                   color="red"
                 >
                   <v-icon
@@ -411,14 +402,8 @@
                 "
               >
                 <v-badge
-                  :value="
-                    cartProducts.product && cartProducts.product.length > 0
-                      ? true
-                      : false
-                  "
-                  :content="
-                    cartProducts.product ? cartProducts.product.length : null
-                  "
+                  :value="cartNotification"
+                  :content="cartNotification"
                   color="red"
                 >
                   <v-icon
@@ -669,8 +654,40 @@ export default {
   name: "navIcons",
   data() {
     return {
-      loading: false
+      loading: false,
+      cartNotification: this.$store.state.cartProducts
+        ? this.$store.state.cartProducts.product.length
+        : null,
+      wishlistNotification: this.$store.state.wishListProducts
+        ? this.$store.state.wishListProducts.product.length
+        : null
     };
+  },
+  mounted() {
+    if (this.$auth.user) {
+      this.$echo
+        .channel("notification")
+        .listen("addToCartNotification", data => {
+          this.cartNotification = this.cartProducts
+            ? this.cartProducts.product.length + 1
+            : 1;
+        })
+        .listen("deleteFromCartNotification", data => {
+          this.cartNotification = this.cartProducts
+            ? this.cartProducts.product.length - 1
+            : null;
+        })
+        .listen("addToWishlistNotification", data => {
+          this.wishlistNotification = this.wishListProducts
+            ? this.wishListProducts.product.length + 1
+            : 1;
+        })
+        .listen("deleteFromWishlistNotification", data => {
+          this.wishlistNotification = this.wishListProducts
+            ? this.wishListProducts.product.length - 1
+            : null;
+        });
+    }
   },
 
   methods: {
@@ -713,9 +730,19 @@ export default {
   watch: {
     cartProducts() {
       this.loading = false;
+      if (this.cartProducts) {
+        this.cartNotification = this.cartProducts.product.length;
+      } else {
+        this.cartNotification = null;
+      }
     },
     wishListProducts() {
       this.loading = false;
+      if (this.wishListProducts) {
+        this.wishlistNotification = this.wishListProducts.product.length;
+      } else {
+        this.wishlistNotification = null;
+      }
     }
   }
 };

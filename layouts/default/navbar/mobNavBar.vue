@@ -20,7 +20,7 @@
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
-      <span style="font-size: 1.6rem; letter-spacing: 0.1rem">Techshop </span>
+      <span class="header-title">Tech-shop </span>
 
       <v-spacer></v-spacer>
       <v-hover v-slot="{ hover }">
@@ -47,16 +47,8 @@
           >
             <v-badge
               overlap
-              :value="
-                wishListProducts.product && wishListProducts.product.length > 0
-                  ? true
-                  : false
-              "
-              :content="
-                wishListProducts.product
-                  ? wishListProducts.product.length
-                  : null
-              "
+              :value="wishlistNotification"
+              :content="wishlistNotification"
               color="red"
             >
               <v-icon
@@ -77,14 +69,8 @@
           <v-btn :small="$vuetify.breakpoint.smAndDown" class="mr-0" icon>
             <v-badge
               overlap
-              :value="
-                cartProducts.product && cartProducts.product.length > 0
-                  ? true
-                  : false
-              "
-              :content="
-                cartProducts.product ? cartProducts.product.length : null
-              "
+              :value="cartNotification"
+              :content="cartNotification"
               color="red"
             >
               <v-icon
@@ -98,13 +84,13 @@
       </v-hover>
     </v-app-bar>
 
-      <div
-        :style="$vuetify.breakpoint.xs ? 'width: 97%' : 'width: 60%'"
-        class="search-input mx-auto"
-        v-if="mobSearch && $vuetify.breakpoint.mdAndDown"
-      >
-        <search />
-      </div>
+    <div
+      :style="$vuetify.breakpoint.xs ? 'width: 97%' : 'width: 60%'"
+      class="search-input mx-auto"
+      v-if="mobSearch && $vuetify.breakpoint.mdAndDown"
+    >
+      <search />
+    </div>
 
     <v-navigation-drawer
       class="nav-drawer"
@@ -138,12 +124,12 @@
 
           <v-expansion-panel-content>
             <v-list dense class="my-1 pa-0 ml-5" nav>
-               <nuxt-link
-                    :to="localePath('/Account')"
-                    class="text-decoration-none"
-                  >
-              <v-list-item link class="">
-                <v-hover v-slot="{ hover }">
+              <nuxt-link
+                :to="localePath('/Account')"
+                class="text-decoration-none"
+              >
+                <v-list-item link class="">
+                  <v-hover v-slot="{ hover }">
                     <v-list-item-title
                       :class="hover ? 'orange--text text--darken-4' : ''"
                       class="pa-0"
@@ -156,8 +142,8 @@
                       </v-icon>
                       {{ $t("myAccount") }}
                     </v-list-item-title>
-                </v-hover>
-              </v-list-item>
+                  </v-hover>
+                </v-list-item>
               </nuxt-link>
 
               <nuxt-link
@@ -575,12 +561,45 @@ export default {
   data() {
     return {
       mobSearch: false,
-      drawer: null
+      drawer: null,
+      cartNotification: this.$store.state.cartProducts
+        ? this.$store.state.cartProducts.product.length
+        : null,
+      wishlistNotification: this.$store.state.wishListProducts
+        ? this.$store.state.wishListProducts.product.length
+        : null
     };
   },
   components: {
     search
   },
+  mounted() {
+    if (this.$auth.user) {
+      this.$echo
+        .channel("notification")
+        .listen("addToCartNotification", data => {
+          this.cartNotification = this.cartProducts
+            ? this.cartProducts.product.length + 1
+            : 1;
+        })
+        .listen("deleteFromCartNotification", data => {
+          this.cartNotification = this.cartProducts
+            ? this.cartProducts.product.length - 1
+            : null;
+        })
+        .listen("addToWishlistNotification", data => {
+          this.wishlistNotification = this.wishListProducts
+            ? this.wishListProducts.product.length + 1
+            : 1;
+        })
+        .listen("deleteFromWishlistNotification", data => {
+          this.wishlistNotification = this.wishListProducts
+            ? this.wishListProducts.product.length - 1
+            : null;
+        });
+    }
+  },
+
   methods: {
     logout() {
       this.$store.dispatch("authentication/logout");
@@ -588,7 +607,6 @@ export default {
     },
 
     getBrand(type, brand) {
-      console.log(brand);
       this.$store.commit("filters/setSelectedFilters", []);
       this.$store.dispatch("filters/productByBrand", [type, brand]);
       this.$router.push(this.localePath("/" + type));
@@ -601,6 +619,24 @@ export default {
       wishListProducts: "getWishListProducts",
       productCategories: "home/getProductCategories"
     })
+  },
+  watch: {
+    cartProducts() {
+      this.loading = false;
+      if (this.cartProducts) {
+        this.cartNotification = this.cartProducts.product.length;
+      } else {
+        this.cartNotification = null;
+      }
+    },
+    wishListProducts() {
+      this.loading = false;
+      if (this.wishListProducts) {
+        this.wishlistNotification = this.wishListProducts.product.length;
+      } else {
+        this.wishlistNotification = null;
+      }
+    }
   }
 };
 </script>
@@ -613,6 +649,12 @@ export default {
 }
 .bar-height {
   height: 3.5rem;
+}
+.header-title {
+  font-size: 1.6rem;
+  letter-spacing: 0.1rem;
+  font-style: italic;
+  font-family: cursive;
 }
 .search-input {
   margin-top: 3.7rem;

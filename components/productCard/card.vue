@@ -244,12 +244,6 @@ export default {
   methods: {
     addToCart() {
       if (this.$auth.loggedIn) {
-        this.$emit("display-alert", {
-          msg: this.$i18n.t("ProductAddedToYourShoppingCartSuccessfully"),
-          type: "success"
-        });
-
-        this.cartIcon = true;
         this.$store.dispatch("addToUserCart", [
           this.$auth.user.id,
           this.product.id,
@@ -257,6 +251,12 @@ export default {
         ]);
 
         this.$store.dispatch("userCartProducts", [this.$auth.user.id]);
+        this.$emit("display-alert", {
+          msg: this.$i18n.t("ProductAddedToYourShoppingCartSuccessfully"),
+          type: "success"
+        });
+
+        this.cartIcon = true;
       } else {
         this.$emit("display-alert", {
           msg: this.$i18n.t("PleaseRegisterOrLoginToEnjoyYourShoppingCart"),
@@ -267,18 +267,18 @@ export default {
 
     addToWishlist() {
       if (this.$auth.loggedIn) {
-        this.$emit("display-alert", {
-          msg: this.$i18n.t("ProductAddedToYourWishlistSuccessfully"),
-          type: "success"
-        });
-
-        this.wishListIcon = !this.wishListIcon;
         this.$store.dispatch("addToUserWishList", [
           this.$auth.user.id,
           this.product.id
         ]);
 
         this.$store.dispatch("userWishlistProducts", [this.$auth.user.id]);
+        this.$emit("display-alert", {
+          msg: this.$i18n.t("ProductAddedToYourWishlistSuccessfully"),
+          type: "success"
+        });
+
+        this.wishListIcon = !this.wishListIcon;
       } else {
         this.$emit("display-alert", {
           msg: this.$i18n.t("PleaseRegisterOrLoginToEnjoyYourWishlist"),
@@ -288,6 +288,12 @@ export default {
     },
     deleteWishlistProduct() {
       if (this.$auth.loggedIn) {
+        this.$store.dispatch("deleteWishlistProduct", [
+          this.$auth.user.id,
+          this.product.id
+        ]);
+
+        this.$store.dispatch("userWishlistProducts", [this.$auth.user.id]);
         this.$emit("display-alert", {
           msg: this.$i18n.t("ProductdeletedfromYourWishlistSuccessfully"),
           type: "success"
@@ -295,12 +301,6 @@ export default {
 
         this.wishListIcon = !this.wishListIcon;
         this.loading = true;
-        this.$store.dispatch("deleteWishlistProduct", [
-          this.$auth.user.id,
-          this.product.id
-        ]);
-
-        this.$store.dispatch("userWishlistProducts", [this.$auth.user.id]);
       } else {
         this.$emit("display-alert", {
           msg: this.$i18n.t("PleaseRegisterOrLoginToEnjoyYourWishlist"),
@@ -310,6 +310,11 @@ export default {
     },
     deleteProduct() {
       if (this.$auth.loggedIn) {
+        this.$store.dispatch("deleteCartProduct", [
+          this.$auth.user.id,
+          this.product.id
+        ]);
+        this.$store.dispatch("userCartProducts", [this.$auth.user.id]);
         this.$emit("display-alert", {
           msg: this.$i18n.t("ProductdeletedfromYourShoppingCartSuccessfully"),
           type: "success"
@@ -317,11 +322,6 @@ export default {
 
         this.cartIcon = false;
         this.loading = true;
-        this.$store.dispatch("deleteCartProduct", [
-          this.$auth.user.id,
-          this.product.id
-        ]);
-        this.$store.dispatch("userCartProducts", [this.$auth.user.id]);
       } else {
         this.$emit("display-alert", {
           msg: this.$i18n.t("PleaseRegisterOrLoginToEnjoyYourShoppingCart"),
@@ -338,6 +338,8 @@ export default {
 
         if (idList.includes(this.product.id)) {
           this.wishListIcon = true;
+        } else {
+          this.wishListIcon = false;
         }
       }
     },
@@ -350,6 +352,8 @@ export default {
 
         if (idList.includes(this.product.id)) {
           this.cartIcon = true;
+        } else {
+          this.cartIcon = false;
         }
       }
     },
@@ -396,6 +400,14 @@ export default {
       wishListProducts: "getWishListProducts",
       cartProducts: "getCartProducts"
     })
+  },
+  watch: {
+    wishListProducts() {
+      this.existingWishListProducts();
+    },
+    cartProducts() {
+      this.existingCartProducts();
+    }
   }
 };
 </script>

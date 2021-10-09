@@ -110,9 +110,9 @@ export default {
   middleware({ app, redirect, $auth }) {
     if ($auth.loggedIn) {
       if (app.i18n.vm.locale == "en") {
-        return redirect("/account");
+        return redirect("/");
       } else if (app.i18n.vm.locale == "ar") {
-        return redirect("/ar/account");
+        return redirect("/ar/");
       }
     }
   },
@@ -128,7 +128,7 @@ export default {
       error: false
     };
   },
-
+  mounted() {},
   components: {
     breadCrumb,
     ValidationProvider,
@@ -152,15 +152,16 @@ export default {
 
   watch: {
     loginStatus() {
-      if (this.loginStatus == "failed") {
+      if (this.loginStatus == "success") {
+        this.isLoading = false;
+        if (this.$i18n.locale == "en") {
+          this.$router.push("/");
+        } else if (this.$i18n.locale == "ar") {
+          this.$router.push("/ar/");
+        }
+      } else if (this.loginStatus == "failed") {
         this.isLoading = false;
         this.error = true;
-      } else if (this.loginStatus == "success") {
-        if (this.$i18n.locale == "en") {
-          this.$router.push("/Account");
-        } else if (this.$i18n.locale == "ar") {
-          this.$router.push("/ar/Account");
-        }
       }
     }
   }
